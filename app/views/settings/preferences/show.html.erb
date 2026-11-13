@@ -154,6 +154,17 @@
          data-currency-preferences-base-currency-value="<%= @user.family.primary_currency_code %>"
          data-currency-preferences-locale-value="<%= I18n.locale %>"
          data-currency-preferences-selected-count-translations-value="<%= selected_count_translations.to_json %>">
+      <%= styled_form_with model: @user, class: "space-y-4", data: { controller: "auto-submit-form" } do |form| %>
+        <%= form.hidden_field :redirect_to, value: "preferences" %>
+        <%= form.fields_for :family do |family_form| %>
+          <%= family_form.collection_select :currency,
+              Money::Currency.as_options,
+              :iso_code,
+              :name,
+              { label: t(".base_currency_label"), include_blank: false },
+              { data: { auto_submit_form_target: "auto" } } %>
+        <% end %>
+      <% end %>
       <% additional_preview_currencies = @user.family.secondary_enabled_currency_objects.first(6) %>
       <% additional_currency_count = @user.family.secondary_enabled_currency_objects.count %>
       <div class="rounded-xl border border-secondary p-4 bg-container-inset">
