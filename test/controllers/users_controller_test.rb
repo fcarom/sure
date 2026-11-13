@@ -47,6 +47,22 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ "USD", "SGD" ], @user.family.reload.enabled_currency_codes
   end
 
+  test "admin can change the family's base currency" do
+    patch user_url(@user), params: {
+      user: {
+        redirect_to: "preferences",
+        family_attributes: {
+          id: @user.family.id,
+          currency: "EUR"
+        }
+      }
+    }
+
+    assert_redirected_to settings_preferences_url
+    assert_equal "EUR", @user.family.reload.currency
+    assert_includes @user.family.reload.enabled_currency_codes, "EUR"
+  end
+
   test "rejects an unknown family currency" do
     patch user_url(@user), params: {
       user: {
